@@ -2,7 +2,7 @@ package money_test
 
 import (
 	"fmt"
-	"github.com/jbowles/hotel_import/money"
+	"github.com/jbowles/money"
 	"testing"
 )
 
