@@ -100,30 +100,35 @@ const (
 )
 
 //////////////////////////////////////////////////////////////
-///////// GET AND SET BASIC VALUES ///////////////////////////
+///////// GET AND UPDATE MONEY TYPE ///////////////////////////
 //////////////////////////////////////////////////////////////
 
-// Get gets the float64 value of money (see Value() for int64)
-func (m *Money) Get() float64 {
+// Valuei returns int64 value of Money
+func (m *Money) Valuei() int64 {
+	return m.M
+}
+
+// Valuef gets the float64 value of money (see Value() for int64)
+func (m *Money) Valuef() float64 {
 	return float64(m.M) / DPf
 }
 
-// Set sets the Money field M
-func (m *Money) Set(x int64) *Money {
+// ValueiTrunc gets value of money truncating after DP (see Value() for no truncation)
+func (m *Money) ValueiTrunc() int64 {
+	return m.M / DP
+}
+
+// Set sets the Money field M, this is destructive
+func (m *Money) Updatei(x int64) *Money {
 	m.M = x
 	return m
 }
 
-// Gett gets value of money truncating after DP (see Value() for no truncation)
-func (m *Money) Gett() int64 {
-	return m.M / DP
-}
-
 // Setf sets a float64 into a Money type for precision calculations
-func (m *Money) Setf(f float64) *Money {
+func (m *Money) Updatef(f float64) *Money {
 	fDPf := f * DPf
 	r := int64(f * DPf)
-	return m.Set(Rnd(r, fDPf-float64(r)))
+	return m.Updatei(Rnd(r, fDPf-float64(r)))
 }
 
 //////////////////////////////////////////////////////////////
@@ -136,8 +141,9 @@ func (m *Money) Add(n *Money) *Money {
 	if (r^m.M)&(r^n.M) < 0 {
 		panic(OVFL)
 	}
-	m.M = r
-	return m
+	//m.M = r
+	//return m
+	return &Money{r}
 }
 
 // Sub subtracts one Money type from another
@@ -146,20 +152,19 @@ func (m *Money) Sub(n *Money) *Money {
 	if (r^m.M)&^(r^n.M) < 0 {
 		panic(OVFL)
 	}
-	m.M = r
-	return m
+	return &Money{r}
 }
 
 // Mul Multiplies two Money types
 func (m *Money) Mul(n *Money) *Money {
-	return m.Set(m.M * n.M / DP)
+	return &Money{((m.M * n.M) / DP)}
 }
 
 // Div Divides one Money type from another
 func (m *Money) Div(n *Money) *Money {
-	f := Guardf * DPf * float64(m.M) / float64(n.M) / Guardf
+	f := ((((Guardf * DPf) * float64(m.M)) / float64(n.M)) / Guardf)
 	i := int64(f)
-	return m.Set(Rnd(i, f-float64(i)))
+	return &Money{Rnd(i, f-float64(i))}
 }
 
 //////////////////////////////////////////////////////////////
@@ -168,12 +173,7 @@ func (m *Money) Div(n *Money) *Money {
 
 // String for money type representation in basic monetary unit (DOLLARS CENTS)
 func (m *Money) String() string {
-	return fmt.Sprintf("%d.%02d", m.Value()/DP, m.Abs().Value()%DP)
-}
-
-// Value returns in int64 the value of Money (also see Gett(), See Get() for float64)
-func (m *Money) Value() int64 {
-	return m.M
+	return fmt.Sprintf("%d.%02d", m.Valuei()/DP, m.Abs().Valuei()%DP)
 }
 
 // Abs Returns the absolute value of Money
@@ -208,10 +208,11 @@ func Rnd(r int64, trunc float64) int64 {
 
 // Neg Returns the negative value of Money
 func (m *Money) Neg() *Money {
+	r := m.M
 	if m.M != 0 {
-		m.M *= -1
+		r *= -1
 	}
-	return m
+	return &Money{r}
 }
 
 // Sign returns the Sign of Money 1 if positive, -1 if negative
@@ -274,7 +275,7 @@ func SD(a []float64) float64 {
 func (m *Money) Mulf(f float64) *Money {
 	i := m.M * int64(f*Guardf*DPf)
 	r := i / Guard / DP
-	return m.Set(Rnd(r, float64(i)/Guardf/DPf-float64(r)))
+	return &Money{Rnd(r, float64(i)/Guardf/DPf-float64(r))}
 }
 
 // Mean Average
