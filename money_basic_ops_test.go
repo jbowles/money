@@ -20,6 +20,28 @@ func TestMoneyTypePrint(t *testing.T) {
 	}
 }
 
+func TestMoneyStructInitialize(t *testing.T) {
+	val := money.Money{123456}
+
+	if val.Value() != 123456 {
+		t.Error("money struct init Value() should be value '123456'", val.Value())
+	}
+
+	if val.String() != "1234.56" {
+		t.Error("money struct init String() should be value '1234.56'", val.String())
+	}
+
+	// modify value in place
+	val.Neg()
+	if val.Value() != int64(-123456) {
+		t.Error("val.Neg() should be value '-123456'", val.Value())
+	}
+
+	if val.String() != "-1234.56" {
+		t.Error("val.Neg() as String() should be '-1234.56'", val.String())
+	}
+}
+
 func TestMoneySetIsMoneyType(t *testing.T) {
 	m := money.Money{}
 	var val1 int64 = 7868
