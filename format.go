@@ -5,15 +5,16 @@ import (
 	"golang.org/x/text/currency"
 )
 
-func (m *Money) Format(isoCode string) (string, string, string) {
+func (m *Money) Format(isoCode string) (string, string, *Money) {
 	code, _ := currency.ParseISO(isoCode)
 	var symbol = currency.NarrowSymbol
 	// symbol(code) is a currency.Value and has a Format() function but it seems easier to use fmt.
 	symString := fmt.Sprintf("%v", symbol(code))
-	return symString, code.String(), m.StringP()
+	return symString, code.String(), m
 }
 
 /*
+AN EXAMPLE OF UISNG SOME OF THE FORMATTING FROM text/currency. CURRENTLY INTEGERS NOT SUPPORTED, AND NOT COMMA VERSUS DECIMAL DELIMITER IN STRING METHODS
   	m := money.Money{123456}
 	FormatFloat64(m.Valuef(), "DKK")
 func FormatFloat64(m float64, isoCode string) {
