@@ -31,8 +31,12 @@ func TestMoneyValueIntAndFloat(t *testing.T) {
 		t.Error("Valuef() should be float64 '123456'", val.Valuef())
 	}
 
-	if val.String() != "1234.56" {
-		t.Error("money struct init String() should be value '1234.56'", val.String())
+	if val.StringP() != "1234.56" {
+		t.Error("money struct init StringP() should be value '1234.56'", val.StringP())
+	}
+
+	if val.StringC() != "1234,56" {
+		t.Error("money struct init StringC() should be value '1234,56'", val.StringC())
 	}
 }
 
@@ -49,8 +53,8 @@ func TestMoneyNegNotMutable(t *testing.T) {
 		t.Error("val should be int64 '1234.56'", val.Valuef())
 	}
 
-	if val.String() != "1234.56" {
-		t.Error("val.String() should be '1234.56'", val.String())
+	if val.StringP() != "1234.56" {
+		t.Error("val.StringP() should be '1234.56'", val.StringP())
 	}
 
 	if neg.Valuei() != int64(-123456) {
@@ -62,8 +66,8 @@ func TestMoneyNegNotMutable(t *testing.T) {
 	}
 
 	// TODO oddity for negative money values!!!!
-	if neg.String() != "-1234.-56" {
-		t.Error("neg.String() should be '-1234.-56'", neg.String())
+	if neg.StringP() != "-1234.-56" {
+		t.Error("neg.StringP() should be '-1234.-56'", neg.StringP())
 	}
 }
 
@@ -97,14 +101,14 @@ func TestMoneyUpdateIsMoneyType(t *testing.T) {
 
 func TestMoneyStringWithUpdate(t *testing.T) {
 	m := money.Money{67}
-	if m.String() != "0.67" {
-		t.Error("wanted to see '0.67' cents but got: ", m.String())
+	if m.StringP() != "0.67" {
+		t.Error("wanted to see '0.67' cents but got: ", m.StringP())
 	}
 
 	var val2 int64 = 6700
 	m.Updatei(val2)
-	if m.String() != "67.00" {
-		t.Error("wanted to see '67.00' dollars but got: ", m.String())
+	if m.StringP() != "67.00" {
+		t.Error("wanted to see '67.00' dollars but got: ", m.StringP())
 	}
 }
 
@@ -113,12 +117,20 @@ func TestMoneyVarsNotChanging(t *testing.T) {
 	var val2 int64 = 6700
 	m1 := money.Money{val1}
 	m2 := money.Money{val2}
-	if m1.String() != "0.67" {
-		t.Error("expected '0.67' got: ", m1.String())
+	if m1.StringP() != "0.67" {
+		t.Error("expected '0.67' got: ", m1.StringP())
 	}
 
-	if m2.String() != "67.00" {
-		t.Error("expected '67.00' got: ", m2.String())
+	if m2.StringP() != "67.00" {
+		t.Error("expected '67.00' got: ", m2.StringP())
+	}
+
+	if m1.StringC() != "0,67" {
+		t.Error("expected '0,67' got: ", m1.StringC())
+	}
+
+	if m2.StringC() != "67,00" {
+		t.Error("expected '67,00' got: ", m2.StringC())
 	}
 }
 
@@ -127,8 +139,12 @@ func TestMoneyAdd(t *testing.T) {
 	m2 := money.Money{int64(6700)}
 	res := m1.Add(&m2)
 
-	if res.String() != "67.67" {
-		t.Error("expected '67.67' got: ", res.String())
+	if res.StringP() != "67.67" {
+		t.Error("expected '67.67' got: ", res.StringP())
+	}
+
+	if res.StringC() != "67,67" {
+		t.Error("expected '67,67' got: ", res.StringC())
 	}
 }
 
@@ -136,12 +152,12 @@ func TestMoneyAddDoesNotMutate(t *testing.T) {
 	m1 := money.Money{}
 	m2 := money.Money{}
 
-	if m1.String() != "0.00" {
-		t.Error("expected '0.00' got: ", m1.String())
+	if m1.StringP() != "0.00" {
+		t.Error("expected '0.00' got: ", m1.StringP())
 	}
 
-	if m2.String() != "0.00" {
-		t.Error("expected '0.00' got: ", m2.String())
+	if m2.StringP() != "0.00" {
+		t.Error("expected '0.00' got: ", m2.StringP())
 	}
 
 	var val1 int64 = 67   //0.67
@@ -150,16 +166,16 @@ func TestMoneyAddDoesNotMutate(t *testing.T) {
 	m2Set := m2.Updatei(val2)
 	res := m1Set.Add(m2Set)
 
-	if res.String() != "67.67" {
-		t.Error("expected '67.67' got: ", res.String())
+	if res.StringP() != "67.67" {
+		t.Error("expected '67.67' got: ", res.StringP())
 	}
 
-	if m1.String() != "0.67" {
-		t.Error("expected '0.67' got: ", m1.String())
+	if m1.StringP() != "0.67" {
+		t.Error("expected '0.67' got: ", m1.StringP())
 	}
 
-	if m1Set.String() != "0.67" {
-		t.Error("expected '0.67' got: ", m1Set.String())
+	if m1Set.StringP() != "0.67" {
+		t.Error("expected '0.67' got: ", m1Set.StringP())
 	}
 }
 
@@ -168,8 +184,8 @@ func TestMoneySub(t *testing.T) {
 	m2 := money.Money{6700}
 	res := m2.Sub(&m1)
 
-	if res.String() != "66.33" {
-		t.Error("expected '66.33' got: ", res.String())
+	if res.StringP() != "66.33" {
+		t.Error("expected '66.33' got: ", res.StringP())
 	}
 }
 
@@ -213,7 +229,12 @@ func TestMoneyAddLargeSumUpdateFloat(t *testing.T) {
 	res := m1Set.Add(m2Set)
 
 	//12390678659.32 + 8937670084.36 = 21,328,348,743.68
-	if res.String() != "21328348743.68" {
-		t.Error("expected '21328348743.68' got: ", res.String())
+	if res.StringP() != "21328348743.68" {
+		t.Error("expected '21328348743.68' got: ", res.StringP())
+	}
+
+	//12390678659.32 + 8937670084.36 = 21,328,348,743.68
+	if res.StringC() != "21328348743,68" {
+		t.Error("expected '21328348743,68' got: ", res.StringC())
 	}
 }

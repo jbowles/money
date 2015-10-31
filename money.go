@@ -171,9 +171,14 @@ func (m *Money) Div(n *Money) *Money {
 ///////////////////////// FORMATTING, ROUNDING ///////////////////////////////////
 //////////////////////////////////////////////////////////////
 
-// String for money type representation in basic monetary unit (DOLLARS CENTS)
-func (m *Money) String() string {
+// StringP for money type representation in basic monetary unit (DOLLARS POINT CENTS)
+func (m *Money) StringP() string {
 	return fmt.Sprintf("%d.%02d", m.Valuei()/DP, m.Abs().Valuei()%DP)
+}
+
+// StringC for money type representation in basic monetary unit (DOLLARS COMMA CENTS)
+func (m *Money) StringC() string {
+	return fmt.Sprintf("%d,%02d", m.Valuei()/DP, m.Abs().Valuei()%DP)
 }
 
 // Abs Returns the absolute value of Money
