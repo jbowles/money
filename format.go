@@ -22,6 +22,8 @@ type MoneyFormat struct {
 var currencySymbolFunc = currency.NarrowSymbol
 var symbKindCash = currency.Symbol.Kind(currency.Cash)
 
+// Format returns a money format struct with the money int64 value, as well as curency code and symbol
+// NOTE that `symbol(code)` is a `currency.Value` and has a `Format()` function but it seems easier to use fmt.
 func (m *Money) Format(isoCode string) (MoneyFormat, error) {
 	var mf = MoneyFormat{MoneyVal: m}
 	code, err := currency.ParseISO(isoCode)
@@ -29,11 +31,11 @@ func (m *Money) Format(isoCode string) (MoneyFormat, error) {
 		return mf, err
 	}
 	mf.IsoCode = code.String()
-	// symbol(code) is a currency.Value and has a Format() function but it seems easier to use fmt.
 	mf.Symbol = fmt.Sprintf("%v", currencySymbolFunc(code))
 	return mf, nil
 }
 
+// Formati18Display returns a money format struct with the money int64 value, as well as curency code and symbol along with a i18 formatted display stirng for the currency. This string display feature has a cost, it is about 3 times slower than `Format`
 func (m *Money) Formati18Display(isoCode, language string) (MoneyFormat, error) {
 	mf, err := m.Format(isoCode)
 	if err != nil {
