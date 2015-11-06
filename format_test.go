@@ -6,7 +6,7 @@ import (
 )
 
 func BenchmarkFormatUSD(b *testing.B) {
-	mon := money.Money{123456}
+	mon := money.Money{M: 123456}
 	for i := 0; i < b.N; i++ {
 		_, _ = mon.Format("USD")
 	}
@@ -20,7 +20,7 @@ func TestMoneyFormatUSD(t *testing.T) {
 	val := int64(123456)
 	val2 := float64(1234.56)
 
-	mon := money.Money{123456}
+	mon := money.Money{M: 123456}
 	mf, _ := mon.Format("USD")
 
 	if mf.Symbol != symbolUSD {
@@ -29,8 +29,8 @@ func TestMoneyFormatUSD(t *testing.T) {
 	if mf.IsoCode != codeUSD {
 		t.Error("wanted 'USD' but got", mf.IsoCode)
 	}
-	if mf.MoneyVal.StringP() != valStrExpect {
-		t.Error("wanted '1234.56' but got", mf.MoneyVal.StringP())
+	if mf.MoneyVal.StringD() != valStrExpect {
+		t.Error("wanted '1234.56' but got", mf.MoneyVal.StringD())
 	}
 	if mf.MoneyVal.StringC() != valStr2Expect {
 		t.Error("wanted '1234,56' but got", mf.MoneyVal.StringC())
@@ -48,7 +48,7 @@ func TestMoneyFormatBRL(t *testing.T) {
 	codeBRL := "BRL"
 	//valStrExpect := "R$1.234,56 BRL"
 
-	mon := money.Money{123456}
+	mon := money.Money{M: 123456}
 	mf, _ := mon.Format("BRL") // "pt-BR" also works
 
 	if mf.Symbol != symbolBRL {

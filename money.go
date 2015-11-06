@@ -73,11 +73,21 @@ Value returns in int64 the value of Money (also see Gett, See Get() for float64)
 
 import (
 	"fmt"
-	"math"
 )
+
+type Overflow struct {
+	Fn func(int64, int64) string
+}
+
+var ovf = map[string]Overflow{
+	"add": {func(x, y int64) string { return fmt.Sprintf("%s for %d Add() %d", OVFL, x, y) }},
+	"sub": {func(x, y int64) string { return fmt.Sprintf("%s for %d Sub() %d", OVFL, x, y) }},
+}
 
 type Money struct {
 	M int64 // value of the integer64 Money
+	//Ovf    string //overflow message
+	//OvfErr bool
 }
 
 var (
@@ -86,17 +96,20 @@ var (
 	Guardf float64 = float64(Guardi)
 	DP     int64   = 100         // for default of 2 decimal places => 10^2 (can be reset)
 	DPf    float64 = float64(DP) // for default of 2 decimal places => 10^2 (can be reset)
-	Round          = .5
-	//	Round  = .5 + (1 / Guardf)
-	Roundn = Round * -1
+	Round          = float64(0.5)
+	//Round  = .5 + (1 / Guardf)
+	Roundn = Round * float64(-1)
 )
 
 const (
-	DTL    = "Decimal places too large"
-	DLZ    = "Decimal places cannot be less than zero"
-	NOOR   = "Number out of range"
+	//instead of using math package `math.MaxInt64` just define ourselves
+	MaxInt = int64(^uint(0) >> 1) // max largest int 9223372036854775807
+	MinInt = (-MaxInt - 1)        // max largest int -9223372036854775808
 	OVFL   = "Overflow"
-	MAXDEC = 18
+	//DTL    = "Decimal places too large"
+	//DLZ    = "Decimal places cannot be less than zero"
+	//NOOR   = "Number out of range"
+	//MAXDEC = 18
 )
 
 //////////////////////////////////////////////////////////////
@@ -138,33 +151,43 @@ func (m *Money) Updatef(f float64) *Money {
 // Add Adds two Money types
 func (m *Money) Add(n *Money) *Money {
 	r := m.M + n.M
-	if (r^m.M)&(r^n.M) < 0 {
-		panic(OVFL)
+	if (r^m.M)&(r^n.M) < int64(0) {
+		f := ovf["add"]
+		/*
+			return &Money{
+				M:      int64(0),
+				OvfErr: true,
+				Ovf:    f.Fn(m.M, n.M),
+			}
+		*/
+		panic(f.Fn(m.M, n.M))
 	}
-	//m.M = r
-	//return m
-	return &Money{r}
+	return &Money{M: r}
 }
 
 // Sub subtracts one Money type from another
 func (m *Money) Sub(n *Money) *Money {
 	r := m.M - n.M
-	if (r^m.M)&^(r^n.M) < 0 {
-		panic(OVFL)
+	if (r^m.M)&^(r^n.M) < int64(0) {
+		f := ovf["sub"]
+		panic(f.Fn(m.M, n.M))
 	}
-	return &Money{r}
+	return &Money{M: r}
 }
 
 // Mul Multiplies two Money types
 func (m *Money) Mul(n *Money) *Money {
-	return &Money{((m.M * n.M) / DP)}
+	return &Money{M: ((m.M * n.M) / DP)}
 }
 
 // Div Divides one Money type from another
+// Division by zero will return:
+//  int64 = -9223372036854775807
+//  float64 = 9223372036854775807
 func (m *Money) Div(n *Money) *Money {
 	f := ((((Guardf * DPf) * float64(m.M)) / float64(n.M)) / Guardf)
 	i := int64(f)
-	return &Money{Rnd(i, f-float64(i))}
+	return &Money{M: Rnd(i, f-float64(i))}
 }
 
 //////////////////////////////////////////////////////////////
@@ -172,7 +195,7 @@ func (m *Money) Div(n *Money) *Money {
 //////////////////////////////////////////////////////////////
 
 // StringP for money type representation in basic monetary unit (DOLLARS POINT CENTS)
-func (m *Money) StringP() string {
+func (m *Money) StringD() string {
 	return fmt.Sprintf("%d.%02d", m.Valuei()/DP, m.Abs().Valuei()%DP)
 }
 
@@ -181,10 +204,19 @@ func (m *Money) StringC() string {
 	return fmt.Sprintf("%d,%02d", m.Valuei()/DP, m.Abs().Valuei()%DP)
 }
 
+// Neg Returns the negative value of Money
+func (m *Money) Neg() *Money {
+	r := m.M
+	if m.M != 0 {
+		r *= -1
+	}
+	return &Money{M: r}
+}
+
 // Abs Returns the absolute value of Money
 func (m *Money) Abs() *Money {
-	if m.M < 0 {
-		m.Neg()
+	if m.M < int64(0) {
+		return m.Neg()
 	}
 	return m
 }
@@ -207,18 +239,11 @@ func Rnd(r int64, trunc float64) int64 {
 	return r
 }
 
+/*
+** these functions are not supported
 //////////////////////////////////////////////////////////////
 ///////// NOT SO BASIC FUNCTIONS ///////////////////////////
 //////////////////////////////////////////////////////////////
-
-// Neg Returns the negative value of Money
-func (m *Money) Neg() *Money {
-	r := m.M
-	if m.M != 0 {
-		r *= -1
-	}
-	return &Money{r}
-}
 
 // Sign returns the Sign of Money 1 if positive, -1 if negative
 func (m *Money) Sign() int {
@@ -356,3 +381,4 @@ func R(x, y []float64) (a, b, r float64) {
 	r = s1 / (p1sqrt * q1sqrt)
 	return a, b, r
 }
+*/
