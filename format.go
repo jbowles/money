@@ -2,7 +2,8 @@ package money
 
 import (
 	"fmt"
-	"golang.org/x/text/currency"
+	"github.com/jbowles/money/Godeps/_workspace/src/golang.org/x/text/currency"
+	//"vendor/currency"
 )
 
 type MoneyFormat struct {
