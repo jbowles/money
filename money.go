@@ -1,75 +1,14 @@
+// Package money implements the Money type, which uses a fixed-length guard for precision arithmetic: the int64 variable Guard (and its float64 and int-related variables Guardf and Guardi).
+// DP is the decimal precision, which can be changed in the DecimalPrecision() function.  DP hold the places after the decimal place in the active money struct field M.
+//
+// Money also uses the text/currency package to format money types for currency codes and symbols.
+//
+// Money is heavily modified from the original project (see the external directory of this project for a copy of the original code):
+//	https://github.com/Confunctionist/finance
+// See the license here:
+//	https://github.com/Confunctionist/finance/blob/master/LICENSE
+//
 package money
-
-/*
-
- I borowed and modified from the original project:
-	https://github.com/Confunctionist/finance
- See the license here:
-	https://github.com/Confunctionist/finance/blob/master/LICENSE
-
-The package contains type Money...
-
-type Money struct {
-	M	int64
-}
-
-...which usese a fixed-length guard for precision arithmetic: the
-int64 variable Guard (and its float64 and int-related variables Guardf
-and Guardi.
-
-Rounding is done on float64 to int64 by	the Rnd() function truncating
-at values less than (.5 + (1 / Guardf))	or greater than -(.5 + (1 / Guardf))
-in the case of negative numbers. The Guard adds four decimal places
-of protection to rounding.
-
-DP is the decimal precision, which can be changed in the DecimalPrecision()
-function.  DP hold the places after the decimalplace in teh active money struct field M
-
-The following functions are available
-
-Abs Returns the absolute value of Money
-	(m *Money) Abs() *Money
-Add Adds two Money types
-	(m *Money) Add(n *Money) *Money
-Cov Covariance
-	Cov(x, y []float64) float64
-DecimalChange resets the package-wide decimal place (default is 2 decimal places)
-	DecimalChange(d int)
-Div Divides one Money type from another
-	(m *Money) Div(n *Money) *Money
-Gett gets value of money truncating after DP (see Value() for no truncation)
-	(m *Money) Gett() int64
-Get gets the float64 value of money (see Value() for int64)
-	(m *Money) Get() float64
-Mean Average
-	Mean(a []float64) float64
-Mul Multiplies two Money types
-	(m *Money) Mul(n *Money) *Money
-Mulf Multiplies a Money with a float to return a money-stored type
-	(m *Money) Mulf(f float64) *Money
-Neg Returns the negative value of Money
-	(m *Money) Neg() *Money
-R Regression
-	R(x, y []float64) (a, b, r float64)
-RND Rounds int64 remainder if greater than Round
-	Rnd(r int64, trunc float64) int64
-SD Standard Deviation
-	SD(a []float64) float64
-SDs Standard Deviation of a sample
-	SDs(a []float64) float64
-Set sets the Money field M
-	(m *Money) Set(x int64) *Money
-Setf sets a float 64 into a Money type for precision calculations
-	(m *Money) Setf(f float64) *Money
-Sign returns the Sign of Money 1 if positive, -1 if negative
-	(m *Money) Sign() int
-String for money type representation in basic monetary unit (DOLLARS CENTS)
-	(m *Money) String() string
-Sub subtracts one Money type from another
-	(m *Money) Sub(n *Money) *Money
-Value returns in int64 the value of Money (also see Gett, See Get() for float64)
-	(m *Money) Value() int64
-*/
 
 import (
 	"fmt"
@@ -91,17 +30,17 @@ type Money struct {
 }
 
 var (
-	Guardi int     = 100
-	Guard  int64   = int64(Guardi)
-	Guardf float64 = float64(Guardi)
-	DP     int64   = 100         // for default of 2 decimal places => 10^2 (can be reset)
-	DPf    float64 = float64(DP) // for default of 2 decimal places => 10^2 (can be reset)
-	Round          = float64(0.5)
+	DP    int64   = 100         // for default of 2 decimal places => 10^2 (can be reset)
+	DPf   float64 = float64(DP) // for default of 2 decimal places => 10^2 (can be reset)
+	Round         = float64(0.5)
 	//Round  = .5 + (1 / Guardf)
 	Roundn = Round * float64(-1)
 )
 
 const (
+	Guardi int     = 100
+	Guard  int64   = int64(Guardi)
+	Guardf float64 = float64(Guardi)
 	//instead of using math package `math.MaxInt64` just define ourselves
 	MaxInt = int64(^uint(0) >> 1) // max largest int 9223372036854775807
 	MinInt = (-MaxInt - 1)        // max largest int -9223372036854775808
