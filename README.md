@@ -1,5 +1,6 @@
-
 [![Go Report Card](https://goreportcard.com/badge/github.com/jbowles/money)](https://goreportcard.com/report/github.com/jbowles/money)
+[![GoDoc](https://godoc.org/github.com/jbowles/money?status.svg)](https://godoc.org/github.com/jbowles/money)
+
 # Money
 
 
