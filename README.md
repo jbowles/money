@@ -1,5 +1,8 @@
+
+[![Go Report Card](https://goreportcard.com/badge/github.com/jbowles/money)](https://goreportcard.com/report/github.com/jbowles/money)
 # Money
-i[![Go Report Card](https://goreportcard.com/badge/github.com/jbowles/money)](https://goreportcard.com/report/github.com/jbowles/money)
+
+
 This is a rip-off of an old package called [finance](https://github.com/Confunctionist/finance) by `Confunctionist` on github. Credit is given in the `external` directory along with a copy of the original license.
 
 Uses as its common value type `int64` but supports various operations for `float64`.
