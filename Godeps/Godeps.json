@@ -1,0 +1,27 @@
+{
+	"ImportPath": "github.com/jbowles/money",
+	"GoVersion": "go1.6",
+	"GodepVersion": "v58",
+	"Deps": [
+		{
+			"ImportPath": "golang.org/x/text/currency",
+			"Rev": "07b9a78963006a15c538ec5175243979025fa7a8"
+		},
+		{
+			"ImportPath": "golang.org/x/text/internal",
+			"Rev": "07b9a78963006a15c538ec5175243979025fa7a8"
+		},
+		{
+			"ImportPath": "golang.org/x/text/internal/format",
+			"Rev": "07b9a78963006a15c538ec5175243979025fa7a8"
+		},
+		{
+			"ImportPath": "golang.org/x/text/internal/tag",
+			"Rev": "07b9a78963006a15c538ec5175243979025fa7a8"
+		},
+		{
+			"ImportPath": "golang.org/x/text/language",
+			"Rev": "07b9a78963006a15c538ec5175243979025fa7a8"
+		}
+	]
+}
