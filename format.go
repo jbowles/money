@@ -2,7 +2,7 @@ package money
 
 import (
 	"fmt"
-	"github.com/jbowles/money/Godeps/_workspace/src/golang.org/x/text/currency"
+	"golang.org/x/text/currency"
 	//"vendor/currency"
 )
 
